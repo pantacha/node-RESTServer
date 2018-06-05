@@ -4,8 +4,10 @@ const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express();
 
+const { validarToken, verifica_role_de_usuario } = require('../middlewares/authentication');
 
-app.get('/usuario', (req, res) => {
+
+app.get('/usuario', validarToken, (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -39,7 +41,7 @@ app.get('/usuario', (req, res) => {
 
 })
 
-app.post('/usuario', (req, res) => {
+app.post('/usuario', [validarToken, verifica_role_de_usuario], (req, res) => {
     let usuario = new Usuario();
     usuario.nombre = req.body.nombre;
     usuario.email = req.body.email;
@@ -59,7 +61,7 @@ app.post('/usuario', (req, res) => {
 
 })
 
-app.put('/usuario/:id', (req, res) => {
+app.put('/usuario/:id', [validarToken, verifica_role_de_usuario], (req, res) => {
     let id = req.params.id;
     let update = _.pick(req.body, ['nombre', 'email', 'estado', 'role', 'password']);
 
@@ -76,7 +78,7 @@ app.put('/usuario/:id', (req, res) => {
 
 })
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/:id', [validarToken, verifica_role_de_usuario], (req, res) => {
     let id = req.params.id;
     let usuario_borrado_del_registro = { estado: false };
 
